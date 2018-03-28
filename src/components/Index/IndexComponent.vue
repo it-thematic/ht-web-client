@@ -1,6 +1,5 @@
 <template>
-  <div>
-    <h2>Index component</h2>
+  <div class="page-container">
     <header-panel-component></header-panel-component>
     <search-component></search-component>
     <ex-search-component></ex-search-component>
