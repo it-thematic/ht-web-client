@@ -52,7 +52,7 @@
       },
       page: function (newValue, oldValue) {
         this.offset = this.limit * (newValue - 1)
-        this.getFeatures()
+        this.getFeatures(this.search)
       }
     },
     mounted: function () {
@@ -70,9 +70,9 @@
 
       getFeatures: function (search) {
         let _url = this.rootUrl + store.state.http.features + '?limit=' + this.limit + '&offset=' + this.offset
-        // if (search !== (null || undefined)) {
-        //   _url += '&search=' + search
-        // }
+        if (search !== (null || undefined)) {
+          _url += '&search=' + search
+        }
         this.$http.get(_url).then(response => {
           this.features = response.data.results
           this.count = response.data.count
