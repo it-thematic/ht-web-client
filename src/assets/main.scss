@@ -1,0 +1,22 @@
+@import url('//fonts.googleapis.com/css?family=Roboto:400,500,700,400italic|Material+Icons');
+@import "./variables.sass";
+
+@import "~vue-material/dist/theme/engine"; // Import the theme engine
+
+@include md-register-theme("custom", (
+  primary: #00695c, // The primary color of your application
+  accent: #ffb300, // The accent or secondary color
+  theme: light
+));
+
+@import "~vue-material/dist/theme/all"; // Apply the theme
+
+#app {
+  font-family: 'Roboto', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+// .md-field:after, .md-field:before {
+//   background-color: $secondary-color;
+// }

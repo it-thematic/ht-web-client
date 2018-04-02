@@ -1,21 +1,12 @@
 <template>
   <div class="ex-search-wrapper">
-    <md-button class="md-raised" v-on:click="exsearchOpen = !exsearchOpen">
+    <md-button class="md-raised md-accent" v-on:click="exsearchOpen = !exsearchOpen">
       <md-icon>zoom_in</md-icon>
       Расширенный поиск
     </md-button>
     <div class="ex-search" v-if="exsearchOpen">
-      <md-field>
-        <label>Параметр 1</label>
-        <md-input></md-input>
-        <span class="md-helper-text">Helper text</span>
-      </md-field>
-      <md-field>
-        <label>Параметр 2</label>
-        <md-input></md-input>
-        <span class="md-helper-text">Helper text</span>
-      </md-field>
-      ...
+      <md-datepicker v-model="dateFrom" class="datepicker-halfwidth" id="date-from" v-on:focus="selectDate('date-from')"><label>Date 1</label></md-datepicker>
+      <md-datepicker v-model="dateTo" class="datepicker-halfwidth" id="date-to"><label>Date 2</label></md-datepicker>
       <md-field>
         <label>Параметр N</label>
         <md-input></md-input>
@@ -34,13 +25,23 @@
     name: 'ExSearchComponent',
     data: () => {
       return {
-        exsearchOpen: false
+        exsearchOpen: false,
+        dateFrom: new Date(),
+        dateTo: new Date()
+      }
+    },
+    methods: {
+      selectDate: function (inputId) {
+        console.log(inputId)
+        document.getElementById(inputId).style.fontSize = '16px !important'
       }
     }
   }
 </script>
 
 <style lang="sass">
+  @import '../../../assets/variables.sass'
+
   .ex-search-wrapper
     width: 100vw
     text-align: center
@@ -52,4 +53,12 @@
 
   .btns-wrapper
     text-align: center !important
+
+  .datepicker-halfwidth
+    width: 50%
+    float: left
+
+  .md-field .md-input[type=date], .md-field .md-textarea[type=date]
+  // #date-from, #date-to
+    font-size: 1px !important
 </style>
