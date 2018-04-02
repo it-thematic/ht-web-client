@@ -1,12 +1,22 @@
 <template>
   <div class="table-wrapper">
-    <md-table v-model="features">
+    <md-table v-model="features" md-card>
       <md-table-row slot="md-table-row" slot-scope="{ item }">
         <md-table-cell v-for="value, key in attributes"
           :md-label="value"
           v-bind:key="key">{{ item[key] }}</md-table-cell>
       </md-table-row>
     </md-table>
+    <div class="table-bottom">
+      <span class="table-bottom-span" style="float: left">Результатов <b>{{ count }}</b> (<b>{{ limit }}</b> на странице)</span>
+      <div class="paging-btns-wrapper">
+        <md-button class="md-icon-button" v-on:click="page = 1" :disabled="page === 1"><md-icon>first_page</md-icon></md-button>
+        <md-button class="md-icon-button" v-on:click="page--" :disabled="page === 1"><md-icon>navigate_before</md-icon></md-button>
+        <span class="table-bottom-span">стр. <b>{{ page }}</b> из <b>{{ pages }}</b></span>
+        <md-button class="md-icon-button" v-on:click="page++" :disabled="page === pages"><md-icon>navigate_next</md-icon></md-button>
+        <md-button class="md-icon-button" v-on:click="page = pages" :disabled="page === pages"><md-icon>last_page</md-icon></md-button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -21,7 +31,10 @@
         attributes: [],
         features: [],
         limit: 10,
-        offset: 0
+        offset: 0,
+        page: 1,
+        pages: null,
+        count: null
       }
     },
     computed: {
@@ -36,6 +49,10 @@
     watch: {
       search: function (newQuery, oldQuery) {
         this.getFeatures(newQuery)
+      },
+      page: function (newValue, oldValue) {
+        this.offset = this.limit * (newValue - 1)
+        this.getFeatures()
       }
     },
     mounted: function () {
@@ -58,6 +75,8 @@
         // }
         this.$http.get(_url).then(response => {
           this.features = response.data.results
+          this.count = response.data.count
+          this.pages = this.calcPages(this.count, this.limit)
         }).catch(error => {
           console.log('Error ' + error.status)
         })
@@ -69,5 +88,20 @@
 <style lang="sass">
   .table-wrapper
     width: 100vw
-    padding: 20px 50px 0 50px
+    padding: 10px 30px 0 30px
+
+  .table-bottom
+    padding: 5px
+    min-height: 40px
+    max-height: 40px
+
+  .paging-btns-wrapper
+    text-align: right
+    min-height: 40px
+    max-height: 40px
+
+  .table-bottom-span
+    height: 40px
+    line-height: 40px
+    white-space: nowrap
 </style>

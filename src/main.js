@@ -7,9 +7,11 @@ import VueResource from 'vue-resource'
 import VueMaterial from 'vue-material'
 
 import HttpMixin from './mixins/httpMixin'
+import UtilsMixin from './mixins/utilsMixin'
 
 import 'vue-material/dist/vue-material.min.css'
 import 'vue-material/dist/theme/default.css'
+import utilsMixin from './mixins/utilsMixin';
 
 Vue.config.productionTip = false
 
@@ -18,6 +20,7 @@ Vue.use(VueMaterial)
 Vue.use(VueResource)
 
 Vue.mixin(HttpMixin)
+Vue.mixin(UtilsMixin)
 
 // Vue.http.options.emulateJSON = true
 // Vue.http.options.crossOrigin = true
