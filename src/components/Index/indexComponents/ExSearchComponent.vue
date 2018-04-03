@@ -5,8 +5,12 @@
       Расширенный поиск
     </md-button>
     <div class="ex-search" v-if="exsearchOpen">
-      <md-datepicker v-model="dateFrom" class="datepicker-halfwidth" id="date-from"><label>Date 1</label></md-datepicker>
-      <md-datepicker v-model="dateTo" class="datepicker-halfwidth" id="date-to"><label>Date 2</label></md-datepicker>
+      <md-datepicker v-model="dateFrom" class="datepicker-halfwidth" id="date-from">
+        <span class="md-helper-text">Начальная дата</span>
+      </md-datepicker>
+      <md-datepicker v-model="dateTo" class="datepicker-halfwidth" id="date-to">
+        <span class="md-helper-text">Конечная дата</span>
+      </md-datepicker>
       <md-field>
         <label for="attributes">Атрибуты</label>
         <md-select v-model="selectedAttributes" name="attributes" id="attributes" multiple>
@@ -80,10 +84,8 @@ import indexStore from '../store/indexStore';
     text-align: center !important
 
   .datepicker-halfwidth
-    width: 50%
+    width: 48%
     float: left
-
-  .md-field .md-input[type=date], .md-field .md-textarea[type=date]
-  // #date-from, #date-to
-    font-size: 1px !important
+    margin: 1%
+    margin-bottom: 20px
 </style>
