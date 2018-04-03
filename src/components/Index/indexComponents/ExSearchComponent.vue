@@ -5,35 +5,60 @@
       Расширенный поиск
     </md-button>
     <div class="ex-search" v-if="exsearchOpen">
-      <md-datepicker v-model="dateFrom" class="datepicker-halfwidth" id="date-from" v-on:focus="selectDate('date-from')"><label>Date 1</label></md-datepicker>
+      <md-datepicker v-model="dateFrom" class="datepicker-halfwidth" id="date-from"><label>Date 1</label></md-datepicker>
       <md-datepicker v-model="dateTo" class="datepicker-halfwidth" id="date-to"><label>Date 2</label></md-datepicker>
       <md-field>
-        <label>Параметр N</label>
-        <md-input></md-input>
-        <span class="md-helper-text">Helper text</span>
+        <label for="attributes">Атрибуты</label>
+        <md-select v-model="selectedAttributes" name="attributes" id="attributes" multiple>
+          <md-option v-for="value, key in attributes" v-bind:key="key" :value="key">{{value}}</md-option>
+        </md-select>
       </md-field>
       <div class="btns-wrapper">
-        <md-button>Сбросить</md-button>
-        <md-button>Применить</md-button>
+        <md-button v-on:click="reset()">Сбросить</md-button>
+        <md-button v-on:click="setExQuery()">Применить</md-button>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+  import store from '../../../store'
+import indexStore from '../store/indexStore';
   export default {
     name: 'ExSearchComponent',
     data: () => {
       return {
         exsearchOpen: false,
-        dateFrom: new Date(),
-        dateTo: new Date()
+        dateFrom: null,
+        dateTo: null,
+        attributes: [],
+        selectedAttributes: []
       }
     },
+    mounted: function () {
+      this.$http.get(this.rootUrl + store.state.http.attributes).then(response => {
+        this.attributes = response.data
+      }).catch(error => {
+        console.log('Error ' + error.status)
+      })
+    },
     methods: {
-      selectDate: function (inputId) {
-        console.log(inputId)
-        document.getElementById(inputId).style.fontSize = '16px !important'
+      setExQuery: function () {
+        let _exQuery = {
+          changeableAttributes: this.selectedAttributes,
+          startChanges: this.formatDate(this.dateFrom),
+          endChanges: this.formatDate(this.dateTo)
+        }
+        let _exSearchString = this.createExSearchString(_exQuery)
+        indexStore.state.exSearch = _exSearchString
+      },
+
+      reset: function () {
+        this.dateFrom = null
+        this.dateTo = null
+        this.selectedAttributes = []
+        this.exsearchOpen = false
+        indexStore.state.exSearch = null
       }
     }
   }

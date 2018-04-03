@@ -1,9 +1,13 @@
 <template>
   <div class="search-wrapper">
+    <!-- <md-field md-clearable> -->
     <md-field>
+      <md-icon>search</md-icon>
       <label>Поиск</label>
       <md-input v-model="query" v-on:keyup="setQuery()"></md-input>
-      <md-icon>search</md-icon>
+      <md-button class="md-icon-button md-dense" v-on:click="query = ''; setQuery()">
+        <md-icon>clear</md-icon>
+      </md-button>
     </md-field>
   </div>
 </template>
@@ -16,6 +20,16 @@
       return {
         query: '',
         timeout: null
+      }
+    },
+    computed: {
+      search: function () {
+        return indexStore.state.search
+      }
+    },
+    watch: {
+      search: function (newValue, oldValue) {
+        this.query = newValue
       }
     },
     methods: {
