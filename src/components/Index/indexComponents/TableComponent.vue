@@ -12,7 +12,10 @@
           <md-table-cell
             v-for="value, key in attributes"
             :md-label="value"
-            v-bind:key="key">{{ item[key] }}</md-table-cell>
+            v-bind:key="key"
+            v-on:mouseenter.native="onHover($event, key, item.id)"
+            v-on:mouseleave.native="onRelease($event)"
+            v-on:dblclick.native="showHistoryCard(attribute, itemId)">{{ item[key] }}</md-table-cell>
         </md-table-row>
         <md-table-empty-state
           md-label="Нет результатов"
@@ -29,8 +32,18 @@
           <md-button class="md-icon-button" v-on:click="page++" :disabled="page === pages"><md-icon>navigate_next</md-icon></md-button>
           <md-button class="md-icon-button" v-on:click="page = pages" :disabled="page === pages"><md-icon>last_page</md-icon></md-button>
         </div>
+        <span><i><b>Двойной щелчок по ячейке таблицы</b> - показать историю изменений</i></span>
       </div>
     </div>
+
+    <md-dialog :md-active.sync="showDialog">
+      <md-dialog-title>История</md-dialog-title>
+      <!-- <span v-if="history === [] || history === null">Нет изменений</span> -->
+      <md-dialog-content>{{ history }}</md-dialog-content>
+      <md-dialog-actions>
+        <md-button class="md-primary" @click="showDialog = false">Закрыть</md-button>
+      </md-dialog-actions>
+    </md-dialog>
   </div>
 </template>
 
@@ -49,7 +62,11 @@
         page: 1,
         pages: null,
         count: null,
-        loading: false
+        loading: false,
+        attribute: null,
+        itemId: null,
+        showDialog: false,
+        history: null
       }
     },
     computed: {
@@ -73,13 +90,62 @@
       page: function (newValue, oldValue) {
         this.offset = this.limit * (newValue - 1)
         this.getFeatures(this.search, this.exSearch)
+      },
+      showDialog: function (newState, oldState) {
+        if (!newState) {
+          this.history = null
+        }
       }
+      // attribute: function (newValue, oldValue) {
+      //   if (newValue !== null) {
+      //     this.showHistoryCard(this.attribute, this.itemId)
+      //   }
+      // },
+      // itemId: function (newValue, oldValue) {
+      //   if (newValue !== null) {
+      //     this.showHistoryCard(this.attribute, this.itemId)
+      //   }
+      // }
     },
     mounted: function () {
       this.getAttributes()
       this.getFeatures()
     },
     methods: {
+      onHover: function (event, attribute, itemId) {
+        let _cell = event.target
+        _cell.style.background = '#83b9ff'
+        _cell.style.cursor = 'pointer'
+
+        this.attribute = attribute
+        this.itemId = itemId
+        // let _posX = event.pageX
+        // let _posY = event.pageY
+        // this.showHistoryCard(attribute, itemId, _posX, _posY)
+      },
+
+      showHistoryCard: function (attribute, itemId) {
+        // console.log('ITEM: ' + itemId + ', ATTR: ' + attribute)
+        this.$http.get(this.rootUrl + store.state.http.histories + '?feature_id=' + itemId + '&attribute=' + attribute).then(response => {
+          if (response.data.results.length === 0) {
+            this.history = 'Нет изменений'
+          } else {
+            this.history = response.data.results
+          }
+          this.showDialog = true
+        }).catch(error => {
+          console.log(error.status)
+        })
+      },
+      
+      onRelease: function(event) {
+        let _cell = event.target
+        _cell.style.background = ''
+        _cell.style.cursor = 'default'
+        this.attribute = null
+        this.itemId = null
+      },
+
       getAttributes: function () {
         this.$http.get(this.rootUrl + store.state.http.attributes).then(response => {
           this.attributes = response.data
@@ -141,4 +207,7 @@
     height: 40px
     line-height: 40px
     white-space: nowrap
+
+  .md-table-cell-container
+    background: none !important
 </style>
