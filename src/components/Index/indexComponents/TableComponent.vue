@@ -38,8 +38,16 @@
 
     <md-dialog :md-active.sync="showDialog">
       <md-dialog-title>История</md-dialog-title>
-      <!-- <span v-if="history === [] || history === null">Нет изменений</span> -->
-      <md-dialog-content>{{ history }}</md-dialog-content>
+      <md-dialog-content>
+        <span v-if="history.length === 0">Нет изменений</span>
+        <md-table v-else v-model="history">
+          <md-table-row slot="md-table-row" slot-scope="{ item }">
+            <md-table-cell md-label="Значение">{{ item.value }}</md-table-cell>
+            <md-table-cell md-label="Пользователь">{{ item.user.username }}</md-table-cell>
+            <md-table-cell md-label="Дата">{{ item.date }}</md-table-cell>
+          </md-table-row>
+        </md-table>
+      </md-dialog-content>
       <md-dialog-actions>
         <md-button class="md-primary" @click="showDialog = false">Закрыть</md-button>
       </md-dialog-actions>
@@ -66,7 +74,7 @@
         attribute: null,
         itemId: null,
         showDialog: false,
-        history: null
+        history: []
       }
     },
     computed: {
@@ -93,7 +101,7 @@
       },
       showDialog: function (newState, oldState) {
         if (!newState) {
-          this.history = null
+          this.history = []
         }
       }
       // attribute: function (newValue, oldValue) {
@@ -119,19 +127,11 @@
 
         this.attribute = attribute
         this.itemId = itemId
-        // let _posX = event.pageX
-        // let _posY = event.pageY
-        // this.showHistoryCard(attribute, itemId, _posX, _posY)
       },
 
       showHistoryCard: function (attribute, itemId) {
-        // console.log('ITEM: ' + itemId + ', ATTR: ' + attribute)
         this.$http.get(this.rootUrl + store.state.http.histories + '?feature_id=' + itemId + '&attribute=' + attribute).then(response => {
-          if (response.data.results.length === 0) {
-            this.history = 'Нет изменений'
-          } else {
-            this.history = response.data.results
-          }
+          this.history = response.data.results
           this.showDialog = true
         }).catch(error => {
           console.log(error.status)
